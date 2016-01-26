@@ -61,7 +61,7 @@ class HelloWorldApp < Sinatra::Base
 
 	# Some simple routes
 	get "/" do
-		redirect to(permission_url)
+		redirect permission_url
 	end
 
 	get "/auth/shopify/callback" do
