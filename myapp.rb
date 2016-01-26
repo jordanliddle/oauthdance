@@ -1,14 +1,15 @@
 require 'sinatra'
 require 'shopify_api'
 require 'json'
+require 'httparty'
 
 
 class HelloWorldApp < Sinatra::Base
 
 # Accessing the Shopify API
-	@shop_url = "https://#{key}:#{password}@liddle.myshopify.com/admin"
-	ShopifyAPI::Base.site = @shop_url
-	shop = ShopifyAPI::Shop.current
+	# @shop_url = "https://#{key}:#{password}@liddle.myshopify.com/admin"
+	# ShopifyAPI::Base.site = @shop_url
+	# shop = ShopifyAPI::Shop.current
 
 # Helper methods
 	helpers do
@@ -48,7 +49,8 @@ class HelloWorldApp < Sinatra::Base
 
 # Some simple routes
 	get "/" do
-		"Howdy Partner."
+		puts "hello"
+		# response = HTTParty.get('https://liddle.myshopify.com/admin/oauth/authorize?client_id={api_key}&scope={scopes}&redirect_uri={redirect_uri}&state={nonce}')
 	end
 
 	get "/webhook" do
@@ -56,19 +58,19 @@ class HelloWorldApp < Sinatra::Base
 	end
 
 # Digesting order/create webhooks (set via Shopify admin)
-	post "/webhook" do
-		puts "Webhook received!"
-		request.body.rewind
-  		data = JSON.parse request.body.read	
+	# post "/webhook" do
+	# 	puts "Webhook received!"
+	# 	request.body.rewind
+ #  		data = JSON.parse request.body.read	
 
-  		data["line_items"].each do |x|
-  			order_li_qty = x["quantity"]
-  			sku = x["sku"]
-  			find_variant_by_sku_and_decrement_inventory(sku,order_li_qty)
-  		end
+ #  		data["line_items"].each do |x|
+ #  			order_li_qty = x["quantity"]
+ #  			sku = x["sku"]
+ #  			find_variant_by_sku_and_decrement_inventory(sku,order_li_qty)
+ #  		end
 		
-		order_id = data["id"]
-		add_note(order_id)
-	end	
+	# 	order_id = data["id"]
+	# 	add_note(order_id)
+	# end	
 end
 
