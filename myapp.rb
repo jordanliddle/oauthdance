@@ -1,7 +1,8 @@
 require 'sinatra'
 require 'shopify_api'
 require 'json'
-require 'httparty'
+require 'rest-client'
+require 'uri-handler'
 
 
 class HelloWorldApp < Sinatra::Base
@@ -47,14 +48,36 @@ class HelloWorldApp < Sinatra::Base
 
 	end
 
-# Some simple routes
+	# Set variables for request
+	shop = "liddle-2"
+	api_key = "9f34194c2e102ab66125123f0a24e48a"
+	secret = "f363d7de4de567981ef03c645d998c3d"
+	scopes = "read_orders,write_products"
+	redirect_uri = "https://oauth2dance.herokuapp.com/auth/shopify/callback"
+	nonce = "104293048012345abcdef"
+
+	# Build redirect url
+	permission_url = "https://#{shop}.myshopify.com/admin/oauth/authorize?client_id=#{api_key}&scope=#{scopes.to_uri}&redirect_uri=#{redirect_uri.to_uri}&state=#{nonce}"
+
+	# Some simple routes
 	get "/" do
-		puts "hello"
-		# response = HTTParty.get('https://liddle.myshopify.com/admin/oauth/authorize?client_id={api_key}&scope={scopes}&redirect_uri={redirect_uri}&state={nonce}')
+		redirect to(permission_url)
 	end
 
-	get "/webhook" do
-		"Dump your webhooks here."
+	get "/auth/shopify/callback" do
+		 # get temporary Shopify code...
+  		session_code = request.env['rack.request.query_hash']['code']
+
+  		# ... and POST it back to Shopify
+  		result = RestClient.post("https://#{shop}.myshopify.com/admin/oauth/access_token",
+                          {:client_id => api_key,
+                           :client_secret => secret,
+                           :code => session_code},
+                           :accept => :json)
+
+  		# extract the token and granted scopes
+  		access_token = JSON.parse(result)['access_token']
+  		puts "WORKS!"
 	end
 
 # Digesting order/create webhooks (set via Shopify admin)
