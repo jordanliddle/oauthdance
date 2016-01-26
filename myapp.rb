@@ -31,8 +31,6 @@ class HelloWorldApp < Sinatra::Base
 				decrement_inventory(variant.id,order_line_item_qty) if variant.sku == sku
 			end
 		end
-
-
 	end
 
 	# Set variables for request
@@ -52,23 +50,21 @@ class HelloWorldApp < Sinatra::Base
 	end
 
 	get "/auth/shopify/callback" do
-		 # get temporary Shopify code...
+		# get temporary Shopify code...
   		session_code = request.env['rack.request.query_hash']['code']
 
-
-  		# ... and POST it back to Shopify
+  		# POST it back to Shopify
   		result = RestClient.post("https://#{shop}.myshopify.com/admin/oauth/access_token",
                           {:client_id => api_key,
                            :client_secret => secret,
                            :code => session_code},
                            :accept => :json)
 
-  		# extract the token and granted scopes
+  		# extract the access token 
   		access_token = JSON.parse(result)['access_token']
 	end
 
 	# Digesting order/create webhooks (set via Shopify admin)
-	
 	post "/webhook" do
 		puts "Webhook received!"
 		request.body.rewind
