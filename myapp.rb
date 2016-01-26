@@ -8,11 +8,6 @@ require 'json'
 
 class HelloWorldApp < Sinatra::Base
 
-# Accessing the Shopify API
-	# @shop_url = "https://#{key}:#{password}@liddle.myshopify.com/admin"
-	# ShopifyAPI::Base.site = @shop_url
-	# shop = ShopifyAPI::Shop.current
-
 # Helper methods
 	helpers do
 		# Marks new order with note
@@ -37,25 +32,16 @@ class HelloWorldApp < Sinatra::Base
 			end
 		end
 
-		# def find_by_sku(sku,order_line_item_qty)
-		# 	get "#{@shop_url}/products/search.json?query=sku:#{sku}" do 
-		# 		newdata = JSON.parse response.body
-		# 		@product = newdata["products"].first
-		# 		@product["variants"].select! {|variant| variant[:sku] == sku}
-		# 		decrement_inventory(@product["variants"].first.id)
-		# 	end		
-		# end
-
 
 	end
 
 	# Set variables for request
-	shop = "liddle-2"
+	shop = "liddle"
 	api_key = "9f34194c2e102ab66125123f0a24e48a"
 	secret = "f363d7de4de567981ef03c645d998c3d"
 	scopes = "read_orders,write_products"
 	redirect_uri = "https://oauth2dance.herokuapp.com/auth/shopify/callback"
-	nonce = "104293048012345abcdef"
+	nonce = "hjghjvhjgg57657657cdefgfjkl"
 
 	# Build redirect url
 	permission_url = "https://#{shop}.myshopify.com/admin/oauth/authorize?client_id=#{api_key}&scope=#{scopes.to_uri}&redirect_uri=#{redirect_uri.to_uri}&state=#{nonce}"
@@ -66,10 +52,9 @@ class HelloWorldApp < Sinatra::Base
 	end
 
 	get "/auth/shopify/callback" do
-		puts "ALRIGHT!"
 		 # get temporary Shopify code...
   		session_code = request.env['rack.request.query_hash']['code']
-  		puts "YAY"
+
 
   		# ... and POST it back to Shopify
   		result = RestClient.post("https://#{shop}.myshopify.com/admin/oauth/access_token",
@@ -80,23 +65,23 @@ class HelloWorldApp < Sinatra::Base
 
   		# extract the token and granted scopes
   		access_token = JSON.parse(result)['access_token']
-  		puts "WORKS!"
 	end
 
-# Digesting order/create webhooks (set via Shopify admin)
-	# post "/webhook" do
-	# 	puts "Webhook received!"
-	# 	request.body.rewind
- #  		data = JSON.parse request.body.read	
+	# Digesting order/create webhooks (set via Shopify admin)
+	
+	post "/webhook" do
+		puts "Webhook received!"
+		request.body.rewind
+  		data = JSON.parse request.body.read	
 
- #  		data["line_items"].each do |x|
- #  			order_li_qty = x["quantity"]
- #  			sku = x["sku"]
- #  			find_variant_by_sku_and_decrement_inventory(sku,order_li_qty)
- #  		end
+  		data["line_items"].each do |x|
+  			order_li_qty = x["quantity"]
+  			sku = x["sku"]
+  			find_variant_by_sku_and_decrement_inventory(sku,order_li_qty)
+  		end
 		
-	# 	order_id = data["id"]
-	# 	add_note(order_id)
-	# end	
+		order_id = data["id"]
+		add_note(order_id)
+	end	
 end
 
