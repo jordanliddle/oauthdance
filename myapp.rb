@@ -78,7 +78,10 @@ class HelloWorldApp < Sinatra::Base
 
   		# extract the token and granted scopes
   		access_token = JSON.parse(result)['access_token']
-  		start_session
+  		ShopifyAPI::Session.setup({:api_key => api_key, :secret => secret})
+		session = ShopifyAPI::Session.new("#{shop}.myshopify.com", access_token)
+		ShopifyAPI::Base.activate_session(session)
+		shop = ShopifyAPI::Shop.current
   		new_product = ShopifyAPI::Product.new
 		new_product.title = "Burton Custom Freestlye 151"
 		new_product.product_type = "Snowboard"
