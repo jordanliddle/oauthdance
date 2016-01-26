@@ -3,6 +3,7 @@ require 'shopify_api'
 require 'json'
 require 'rest-client'
 require 'uri-handler'
+require 'json'
 
 
 class HelloWorldApp < Sinatra::Base
