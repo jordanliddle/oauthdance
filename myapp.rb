@@ -41,7 +41,7 @@ class HelloWorldApp < Sinatra::Base
 	secret = "f363d7de4de567981ef03c645d998c3d"
 	scopes = "read_orders,write_products"
 	redirect_uri = "https://oauth2dance.herokuapp.com/auth/shopify/callback"
-	nonce = "hjghjvhjgg57657657cdefgfjkl"
+	nonce = "12345abcdefg"
 
 	# Build redirect url
 	permission_url = "https://#{shop}.myshopify.com/admin/oauth/authorize?client_id=#{api_key}&scope=#{scopes.to_uri}&redirect_uri=#{redirect_uri.to_uri}&state=#{nonce}"
