@@ -15,12 +15,7 @@ class HelloWorldApp < Sinatra::Base
 
 # Helper methods
 	helpers do
-		def start_session
-			ShopifyAPI::Session.setup({:api_key => api_key, :secret => secret})
-			session = ShopifyAPI::Session.new("#{shop}.myshopify.com", access_token)
-			ShopifyAPI::Base.activate_session(session)
-			shop = ShopifyAPI::Shop.current
-		end
+	
 
 		# Marks new order with note
 		def add_note(order_id)
@@ -48,7 +43,7 @@ class HelloWorldApp < Sinatra::Base
 	end
 
 	# Set variables for request
-	shop = "liddle-2"
+	shop = "liddle"
 	api_key = "9f34194c2e102ab66125123f0a24e48a"
 	secret = "f363d7de4de567981ef03c645d998c3d"
 	scopes = "read_orders,write_products"
@@ -78,15 +73,6 @@ class HelloWorldApp < Sinatra::Base
 
   		# extract the token and granted scopes
   		access_token = JSON.parse(result)['access_token']
-  		ShopifyAPI::Session.setup({:api_key => api_key, :secret => secret})
-		session = ShopifyAPI::Session.new("#{shop}.myshopify.com", access_token)
-		ShopifyAPI::Base.activate_session(session)
-		shop = ShopifyAPI::Shop.current
-  		new_product = ShopifyAPI::Product.new
-		new_product.title = "Burton Custom Freestlye 151"
-		new_product.product_type = "Snowboard"
-		new_product.vendor = "Burton"
-		new_product.save
 	end
 
 	# Digesting order/create webhooks (set via Shopify admin)
