@@ -66,8 +66,10 @@ class HelloWorldApp < Sinatra::Base
 	end
 
 	get "/auth/shopify/callback" do
+		puts "ALRIGHT!"
 		 # get temporary Shopify code...
   		session_code = request.env['rack.request.query_hash']['code']
+  		puts "YAY"
 
   		# ... and POST it back to Shopify
   		result = RestClient.post("https://#{shop}.myshopify.com/admin/oauth/access_token",
