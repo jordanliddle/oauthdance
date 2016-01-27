@@ -62,6 +62,7 @@ class HelloWorldApp < Sinatra::Base
 
   		# extract the access token 
   		access_token = JSON.parse(result)['access_token']
+  		puts "Yeehaw"
 	end
 
 	# Digesting order/create webhooks (set via Shopify admin)
