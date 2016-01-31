@@ -37,9 +37,9 @@ class HelloWorldApp < Sinatra::Base
 	shop = "liddle"
 	api_key = "9f34194c2e102ab66125123f0a24e48a"
 	secret = "f363d7de4de567981ef03c645d998c3d"
-	scopes = "read_orders,write_products"
+	scopes = "read_orders,write_orders,read_products,write_products"
 	redirect_uri = "https://oauth2dance.herokuapp.com/auth/shopify/callback"
-	nonce = "12345abcdefg"
+	nonce = "12345677abcdefghijk"
 
 	# Build redirect url
 	permission_url = "https://#{shop}.myshopify.com/admin/oauth/authorize?client_id=#{api_key}&scope=#{scopes.to_uri}&redirect_uri=#{redirect_uri.to_uri}&state=#{nonce}"
@@ -62,15 +62,9 @@ class HelloWorldApp < Sinatra::Base
 
   		# extract the access token 
   		access_token = JSON.parse(result)['access_token']
-  		# ShopifyAPI::Session.setup({:api_key => api_key, :secret => SHARED_SECRET})
   		session = ShopifyAPI::Session.new("liddle.myshopify.com", access_token)
   		ShopifyAPI::Base.activate_session(session)
   		shop = ShopifyAPI::Shop.current
-  		new_product = ShopifyAPI::Product.new
-		new_product.title = "Burton Custom Freestlye 151"
-		new_product.product_type = "Snowboard"
-		new_product.vendor = "Burton"
-		new_product.save
 	end
 
 	# Digesting order/create webhooks (set via Shopify admin)
