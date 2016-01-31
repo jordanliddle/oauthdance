@@ -88,5 +88,16 @@ class HelloWorldApp < Sinatra::Base
 		order_id = data["id"]
 		add_note(order_id)
 	end	
+
+	get "/test" do
+		puts "Begin test."
+		new_product = ShopifyAPI::Product.new
+		new_product.title = "Something test"
+		new_product.product_type = "Snowboard"
+		new_product.vendor = "Burton"
+		new_product.save!
+		puts "finish test"
+	end
+
 end
 
