@@ -62,7 +62,15 @@ class HelloWorldApp < Sinatra::Base
 
   		# extract the access token 
   		access_token = JSON.parse(result)['access_token']
-  		puts "Yeehaw"
+  		# ShopifyAPI::Session.setup({:api_key => api_key, :secret => SHARED_SECRET})
+  		session = ShopifyAPI::Session.new("liddle.myshopify.com", access_token)
+  		ShopifyAPI::Base.activate_session(session)
+  		shop = ShopifyAPI::Shop.current
+  		new_product = ShopifyAPI::Product.new
+		new_product.title = "Burton Custom Freestlye 151"
+		new_product.product_type = "Snowboard"
+		new_product.vendor = "Burton"
+		new_product.save
 	end
 
 	# Digesting order/create webhooks (set via Shopify admin)
