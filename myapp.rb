@@ -39,7 +39,7 @@ class HelloWorldApp < Sinatra::Base
 	secret = "f363d7de4de567981ef03c645d998c3d"
 	scopes = "read_orders,write_orders,read_products,write_products"
 	redirect_uri = "https://oauth2dance.herokuapp.com/auth/shopify/callback"
-	nonce = "12345677abcdefghijk"
+	nonce = "123abc789xyz"
 
 	# Build redirect url
 	permission_url = "https://#{shop}.myshopify.com/admin/oauth/authorize?client_id=#{api_key}&scope=#{scopes.to_uri}&redirect_uri=#{redirect_uri.to_uri}&state=#{nonce}"
@@ -50,7 +50,7 @@ class HelloWorldApp < Sinatra::Base
 	end
 
 	get "/auth/shopify/callback" do
-		# get temporary Shopify code...
+		# get temporary Shopify API code...
   		session_code = request.env['rack.request.query_hash']['code']
 
   		# POST it back to Shopify
@@ -60,14 +60,16 @@ class HelloWorldApp < Sinatra::Base
                            :code => session_code},
                            :accept => :json)
 
-  		# extract the access token 
+  		# extract the access token and create order/create webhook
   		access_token = JSON.parse(result)['access_token']
   		session = ShopifyAPI::Session.new("liddle.myshopify.com", access_token)
   		ShopifyAPI::Base.activate_session(session)
   		shop = ShopifyAPI::Shop.current
+  		webhook = ShopifyAPI::Webhook.create(topic: "orders/create", address:"https://oauth2dance.herokuapp.com/webhook", format: "json")
+  		puts "Webhook created!"
 	end
 
-	# Digesting order/create webhooks (set via Shopify admin)
+	# Digest order webhook and run decrement inventory logic
 	post "/webhook" do
 		puts "Webhook received!"
 		request.body.rewind
@@ -82,16 +84,5 @@ class HelloWorldApp < Sinatra::Base
 		order_id = data["id"]
 		add_note(order_id)
 	end	
-
-	get "/test" do
-		puts "Begin test."
-		new_product = ShopifyAPI::Product.new
-		new_product.title = "Something test"
-		new_product.product_type = "Snowboard"
-		new_product.vendor = "Burton"
-		new_product.save!
-		puts "finish test"
-	end
-
 end
 
